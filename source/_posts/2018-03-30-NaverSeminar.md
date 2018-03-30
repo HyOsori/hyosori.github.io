@@ -37,7 +37,7 @@ PR만 contribute가 아니다! 겁먹지 말고 오픈소스 생태계에 기여
 
 ### 오픈 소스 참여 방법들  
 
-![overview](hyosori.github.io/source/images/first.png)  
+![overview](/images/first.png)  
 
 1. 기능 추가/개선  
     
@@ -63,7 +63,7 @@ repository에 해당 기능에 대하여 issue를 날리고 여건이 되면 직
 4. 직접 운영  
     
 개인적으로 가장 어렵다고 생각  
-![overview](hyosori.github.io/source/images/second.png)  
+![overview](/images/second.png)  
 **README** : 아무리 좋은 오픈 소스라도 문서화가 제대로 되어있지 않는다면 사용자를 끌어 모으기 어려움  
 **코드 퀄리티** : 향후 기여할 사람들을 위해 좋은 퀄리티를 유지해야함  
 **커밋 / 브랜치 관리** : 오픈 소스 사용자 & 기여할 사람들을 위해 깔끔하게 관리해야하며 이에 대한 규칙을 정립해야 함  
@@ -87,7 +87,7 @@ repository에 해당 기능에 대하여 issue를 날리고 여건이 되면 직
 
 **비즈니스라는 측면에서 동아리 활동목적과는 상관이 없기 때문에 생략**  
 **다만 프로젝트 관리 시 도움이 되는 슬라이드가 있어 공유함**  
-![overview](hyosori.github.io/source/images/third.png) 
+![overview](/images/third.png) 
 
 ------------------------------------
 
@@ -109,7 +109,7 @@ repository의 내규나 maintainer의 판단에 따라 야심차게 보낸 PR이
 
 2. contribution  
 
-![overview](hyosori.github.io/source/images/fourth.png) 
+![overview](/images/fourth.png) 
 
 프로젝트 홍보 측면에서는 주로 twitter나 reddit 커뮤니티를 이용하니 참고할 것  
 **많은 부분이 첫 강연과 유사하여 대부분 생략**  
@@ -119,7 +119,7 @@ repository의 내규나 maintainer의 판단에 따라 야심차게 보낸 PR이
 오픈 소스를 제품 취급하지 말 것! 자신이 속한 팀이라고 생각하자  
 오픈 소스 생태계는 알아서 유지 되지 않는다. 상호 존중이 여기에서 거름 역할을 한다.  
 특히 Bus factor가 놓은 maintainer들을 존중하자.  
-**(Bus factor? : 팀원 중 일부가 버스에 치였을 때 프로젝트에 영향을 줄 수 있는 수**)
+**(Bus factor? : 팀원 중 일부가 버스에 치였을 때 프로젝트에 영향을 줄 수 있는 수)**
 
 ### 상호 존중에 대한 구체적 방안들
 
