@@ -94,9 +94,9 @@ tags: [math, statistics, jupyter_notebook]
 
 - 산포도(scatter diagram): 하나의 변수를 횡축에, 그리고 다른 하나의 변수를 종축에 측정 후 각 표본점을 좌표평면 상의 점으로 나타낸 것
 - 공분산(covariance):
-  ![covariance](/images/2018-04-12-Statistic_HongChanSik/5_correlation coefficient.gif)
+  ![covariance](/images/2018-04-12-Statistic_HongChanSik/5_covariance.gif)
   - 공분산은 부호만 의미가 있을 뿐 크기는 아무런 의미를 가지지 못함
 - 상관계수(correlation coefficient): 
   - 측정단위에 따라 크기가 변하는 공분산의 단점을 보완.
-  - ![correlation coefficient](https://latex.codecogs.com/gif.latex?r%20%3D%20%5Cfrac%7Bs_%7Bxy%7D%7D%7Bs_%7Bx%7Ds_%7By%7D%7D%20%3D%20%5Cfrac%7B%5Csum%20%28X_%7Bi%7D-%5Cbar%7BX%7D%29%28Y_%7Bi%7D-%5Cbar%7BY%7D%29%7D%7B%5Csqrt%7B%5Csum%20%28X_%7Bi%7D-%5Cbar%7BX%7D%29%5E2%7D%5Csqrt%7B%5Csum%20%28Y_%7Bi%7D-%5Cbar%7BY%7D%29%5E2%7D%7D)
+  - ![correlation coefficient](/images/2018-04-12-Statistic_HongChanSik/6_correlation_coefficient.gif)
   - -1과 1사이의 값을 가짐. -1/1에 가까울수록 밀접한 음/양의 상관관계
