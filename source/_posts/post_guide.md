@@ -16,8 +16,8 @@ tags: [guide]
 
 ```
 ---
-title: {{ title }} # 포스트의 제목을 작성해 주세요
-date: {{ date }}   # 작성 일자 YYYY-MM-DD HH:MM:SS 형태로 작성해 주세요
+title:             # 포스트의 제목을 작성해 주세요
+date:              # 작성 일자 YYYY-MM-DD HH:MM:SS 형태로 작성해 주세요
 author:            # 작성자 이름 혹은 깃허브 아이디
 githublink:        # 작성자 깃허브 프로필 링크 (ex. https://github.com/CameliaOvO)
 tags:              # 태그 목록 [태그1, 태그2, ... ] 가능하다면 영문소문자, 숫자, 하이픈으로만 ..
