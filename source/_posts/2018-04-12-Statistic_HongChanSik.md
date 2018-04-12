@@ -5,6 +5,9 @@ author: doomsheart           # 작성자 이름 혹은 깃허브 아이디
 githublink: https://github.com/doomsheart # 작성자 깃허브 프로필 링크 (ex. https://github.com/CameliaOvO)
 tags: [math, statistics, jupyter_notebook]
 ---
+
+----------------------------------------
+
 # Chap.01 서론
 
 통계학은 자료를 수집하여 분석함으로써 자료가 가진 정보를 올바르게 해석할 수 있도록 해 주는 학문이다. 부분을 보고 전체에 대한 추론을 하는 것이 바로 통계학이다. 부분을 보고 전체에 대해 행하는 추론은 확률적 명제가 될 수밖에 없기 때문이다.
@@ -38,3 +41,62 @@ tags: [math, statistics, jupyter_notebook]
 - 회귀분석(regression analysis): 이론이 현실을 잘 설명하는지 실증적으로 분석하기 위해 두 변수사이의 관계를 통계자료를 이용하여 파악하는 통계기법. 
 - 단순선형회귀모형: 독립변수와 종속변수라 부르는 오직 두 개의 변수만을 고려.
 - 다중선형회귀모형: 하나의 종속변수를 둘 이상의 독립변수로 설명하는 모형.
+
+----------------------------------------
+
+# Chap.02 자료의 요약과 중요한 기술통계량들
+
+## 2.1 도수분포와 히스토그램
+
+- 도수(frequency)
+- 도수분포(frequency distribution): 자료를 몇 개의 계급구간으로 나눈 다음 각 구간에 속하는 항목의 수를 표로 만든 것.
+  - 자료
+
+    ![data]("https://latex.codecogs.com/png.latex?%5Cbegin%7Bmatrix%7D%20%262%20%265%20%2610%20%2612%20%264%20%5C%5C%20%267%20%2611%20%265%20%268%20%269%20%5C%5C%20%2625%20%2616%20%266%20%265%20%2618%20%5C%5C%20%2613%20%268%20%2614%20%263%20%269%20%5C%5C%20%264%20%268%20%263%20%268%20%2617%20%5Cend%7Bmatrix%7D")
+
+  - 도수 분표
+
+    | 계급구간 | 도수 |
+    |----------|------|
+    | 0~5      | 8    |
+    | 6~10     | 9    |
+    | 11~15    | 4    |
+    | 16~20    | 3    |
+    | 21~25    | 1    |
+    | 합       | 25   |
+- 상대도수(relative frequency): 도수를 항목의 총수로 나눈 값. 이것으로 표를 만든게 도수 분포표.
+- 히스토그램(histogram): 위를 그래프로 그린 것.
+- 누적도수분포(cumulative frequency distribution), 누적상대도수분포(cumulative relative frequency distribution)
+
+## 2.2 자료의 위치를 나타내는 통계량
+
+- 평균(average, mean): 자료의 중심위치를 파악.
+- 중위수(median): 자료를 크기 순으로 정리 할 때 중간에 위치하는 값. 홀수=(n+1/2)번, 짝수=n/2번과 n+1/2번의 평균.
+- 최빈값(mode): 관측된 도구가 가장 많은 값.
+- 그외 백분위수(percentile), 십분위수(decile), 사분위수(quartile)
+  
+  ![quatile]("https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Boxplot_vs_PDF.svg/550px-Boxplot_vs_PDF.svg.png")
+
+## 2.3 자료의 변동성을 나타내는 통계량
+
+- 분산(variance): 자료의 변동성을 측정하기 위해 사용되는 것.
+
+  ![variance]("https://latex.codecogs.com/png.latex?s%5E2%20%3D%20%5Cfrac%7B1%7D%7Bn%20-%201%7D%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%5Cleft%20%28%20X_i%20-%20%5Cbar%7BX%7D%20%5Cright%20%29%5E2")
+- 자유도(degree of freedom): 관측치의 수에서 1을 뺀 n-1, 1뺀 이유는 8장에서 공부
+  - Ex) a는 넓은범위 흩어져 있고 b는 평균주변에 밀집 -> 변동성 a > b, 분산 a > b
+- 표준편차(standard deviation): 분산의 제곱근, 변동성에 비례
+- 평균, 분산, 표준편차 모두 평균에 먼 값, 즉 이상치(outlier)에 의해 영향을 받음
+- 사분위 범위(IQR, interquartile range): ![IQR]("https://latex.codecogs.com/png.latex?IQR%20%3D%20Q_%7B3%7D%20-%20Q_%7B1%7D")
+
+## 2.4 도수분포형태의 자료
+
+## 2.5 산포도와 상관계수
+
+- 산포도(scatter diagram): 하나의 변수를 횡축에, 그리고 다른 하나의 변수를 종축에 측정 후 각 표본점을 좌표평면 상의 점으로 나타낸 것
+- 공분산(covariance):
+  ![covariance]("https://latex.codecogs.com/png.latex?s_%7Bxy%7D%20%3D%20%5Cfrac%7B1%7D%7Bn-1%7D%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%28X_%7Bi%7D-%5Cbar%7BX%7D%29%28Y_%7Bi%7D-%5Cbar%7BY%7D%29")
+  - 공분산은 부호만 의미가 있을 뿐 크기는 아무런 의미를 가지지 못함
+- 상관계수(correlation coefficient): 
+  - 측정단위에 따라 크기가 변하는 공분산의 단점을 보완.
+  - ![correlation coefficient]("https://latex.codecogs.com/png.latex?r%20%3D%20%5Cfrac%7Bs_%7Bxy%7D%7D%7Bs_%7Bx%7Ds_%7By%7D%7D%20%3D%20%5Cfrac%7B%5Csum%20%28X_%7Bi%7D-%5Cbar%7BX%7D%29%28Y_%7Bi%7D-%5Cbar%7BY%7D%29%7D%7B%5Csqrt%7B%5Csum%20%28X_%7Bi%7D-%5Cbar%7BX%7D%29%5E2%7D%5Csqrt%7B%5Csum%20%28Y_%7Bi%7D-%5Cbar%7BY%7D%29%5E2%7D%7D")
+  - -1과 1사이의 값을 가짐. -1/1에 가까울수록 밀접한 음/양의 상관관계
