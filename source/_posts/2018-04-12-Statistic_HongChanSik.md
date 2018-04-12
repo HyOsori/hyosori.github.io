@@ -57,13 +57,14 @@ tags: [math, statistics, jupyter_notebook]
   - 도수 분표
 
     | 계급구간 | 도수 |
-    |----------|------|
+    | -------- | ---- |
     | 0~5      | 8    |
     | 6~10     | 9    |
     | 11~15    | 4    |
     | 16~20    | 3    |
     | 21~25    | 1    |
     | 합       | 25   |
+
 - 상대도수(relative frequency): 도수를 항목의 총수로 나눈 값. 이것으로 표를 만든게 도수 분포표.
 - 히스토그램(histogram): 위를 그래프로 그린 것.
 - 누적도수분포(cumulative frequency distribution), 누적상대도수분포(cumulative relative frequency distribution)
@@ -75,7 +76,7 @@ tags: [math, statistics, jupyter_notebook]
 - 최빈값(mode): 관측된 도구가 가장 많은 값.
 - 그외 백분위수(percentile), 십분위수(decile), 사분위수(quartile)
   
-  ![quatile](/images/2018-04-12-Statistic_HongChanSik/2_quartile.gif)
+  ![quatile](/images/2018-04-12-Statistic_HongChanSik/2_quartile.png)
 
 ## 2.3 자료의 변동성을 나타내는 통계량
 
