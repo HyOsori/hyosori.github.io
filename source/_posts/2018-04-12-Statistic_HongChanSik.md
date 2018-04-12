@@ -52,7 +52,7 @@ tags: [math, statistics, jupyter_notebook]
 - 도수분포(frequency distribution): 자료를 몇 개의 계급구간으로 나눈 다음 각 구간에 속하는 항목의 수를 표로 만든 것.
   - 자료
 
-    ![data](https://latex.codecogs.com/png.latex?%5Cbegin%7Bmatrix%7D%20%262%20%265%20%2610%20%2612%20%264%20%5C%5C%20%267%20%2611%20%265%20%268%20%269%20%5C%5C%20%2625%20%2616%20%266%20%265%20%2618%20%5C%5C%20%2613%20%268%20%2614%20%263%20%269%20%5C%5C%20%264%20%268%20%263%20%268%20%2617%20%5Cend%7Bmatrix%7D)
+    ![data](/images/2018-04-12-Statistic_HongChanSik/1_data.gif)
 
   - 도수 분표
 
@@ -75,18 +75,18 @@ tags: [math, statistics, jupyter_notebook]
 - 최빈값(mode): 관측된 도구가 가장 많은 값.
 - 그외 백분위수(percentile), 십분위수(decile), 사분위수(quartile)
   
-  ![quatile](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Boxplot_vs_PDF.svg/550px-Boxplot_vs_PDF.svg.png)
+  ![quatile](/images/2018-04-12-Statistic_HongChanSik/2_quartile.gif)
 
 ## 2.3 자료의 변동성을 나타내는 통계량
 
 - 분산(variance): 자료의 변동성을 측정하기 위해 사용되는 것.
 
-  ![variance](https://latex.codecogs.com/png.latex?s%5E2%20%3D%20%5Cfrac%7B1%7D%7Bn%20-%201%7D%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%5Cleft%20%28%20X_i%20-%20%5Cbar%7BX%7D%20%5Cright%20%29%5E2)
+  ![variance](/images/2018-04-12-Statistic_HongChanSik/3_variance.gif)
 - 자유도(degree of freedom): 관측치의 수에서 1을 뺀 n-1, 1뺀 이유는 8장에서 공부
   - Ex) a는 넓은범위 흩어져 있고 b는 평균주변에 밀집 -> 변동성 a > b, 분산 a > b
 - 표준편차(standard deviation): 분산의 제곱근, 변동성에 비례
 - 평균, 분산, 표준편차 모두 평균에 먼 값, 즉 이상치(outlier)에 의해 영향을 받음
-- 사분위 범위(IQR, interquartile range): ![IQR](https://latex.codecogs.com/png.latex?IQR%20%3D%20Q_%7B3%7D%20-%20Q_%7B1%7D)
+- 사분위 범위(IQR, interquartile range): ![IQR](/images/2018-04-12-Statistic_HongChanSik/4_IQR.gif)
 
 ## 2.4 도수분포형태의 자료
 
@@ -94,7 +94,7 @@ tags: [math, statistics, jupyter_notebook]
 
 - 산포도(scatter diagram): 하나의 변수를 횡축에, 그리고 다른 하나의 변수를 종축에 측정 후 각 표본점을 좌표평면 상의 점으로 나타낸 것
 - 공분산(covariance):
-  ![covariance](https://latex.codecogs.com/png.latex?s_%7Bxy%7D%20%3D%20%5Cfrac%7B1%7D%7Bn-1%7D%5Csum_%7Bi%3D1%7D%5E%7Bn%7D%28X_%7Bi%7D-%5Cbar%7BX%7D%29%28Y_%7Bi%7D-%5Cbar%7BY%7D%29)
+  ![covariance](/images/2018-04-12-Statistic_HongChanSik/5_correlation coefficient.gif)
   - 공분산은 부호만 의미가 있을 뿐 크기는 아무런 의미를 가지지 못함
 - 상관계수(correlation coefficient): 
   - 측정단위에 따라 크기가 변하는 공분산의 단점을 보완.
