@@ -101,4 +101,3 @@ tags: [math, statistics, jupyter_notebook]
   - ![correlation coefficient](/images/2018-04-12-Statistic_HongChanSik/6_correlation_coefficient.gif)
   - -1과 1사이의 값을 가짐. -1/1에 가까울수록 밀접한 음/양의 상관관계
 - 퀴즈는 [이 링크](https://github.com/doomsheart/Statistics_Data_Analyze/blob/master/Statistics_HongChanSik/Chap02_%EC%9E%90%EB%A3%8C%EC%9D%98_%EC%9A%94%EC%95%BD%EA%B3%BC_%EC%A4%91%EC%9A%94%ED%95%9C_%EA%B8%B0%EC%88%A0%ED%86%B5%EA%B3%84%EB%9F%89%EB%93%A4/Quiz_2.ipynb)에 jupyter-notebook으로 정리하였습니다.
-  -
