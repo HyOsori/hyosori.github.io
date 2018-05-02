@@ -56,14 +56,15 @@ tags: [math, statistics, jupyter_notebook]
 
   - 도수 분표
 
-    | 계급구간 | 도수 |
-    |----------|------|
-    | 0~5      | 8    |
-    | 6~10     | 9    |
-    | 11~15    | 4    |
-    | 16~20    | 3    |
-    | 21~25    | 1    |
-    | 합       | 25   |
+| 계급구간 | 도수 |
+| - | - |
+| 0~5      | 8    |
+| 6~10     | 9    |
+| 11~15    | 4    |
+| 16~20    | 3    |
+| 21~25    | 1    |
+| 합       | 25   |
+
 - 상대도수(relative frequency): 도수를 항목의 총수로 나눈 값. 이것으로 표를 만든게 도수 분포표.
 - 히스토그램(histogram): 위를 그래프로 그린 것.
 - 누적도수분포(cumulative frequency distribution), 누적상대도수분포(cumulative relative frequency distribution)
@@ -75,7 +76,7 @@ tags: [math, statistics, jupyter_notebook]
 - 최빈값(mode): 관측된 도구가 가장 많은 값.
 - 그외 백분위수(percentile), 십분위수(decile), 사분위수(quartile)
   
-  ![quatile](/images/2018-04-12-Statistic_HongChanSik/2_quartile.gif)
+  ![quatile](/images/2018-04-12-Statistic_HongChanSik/2_quartile.png)
 
 ## 2.3 자료의 변동성을 나타내는 통계량
 
@@ -101,3 +102,4 @@ tags: [math, statistics, jupyter_notebook]
   - ![correlation coefficient](/images/2018-04-12-Statistic_HongChanSik/6_correlation_coefficient.gif)
   - -1과 1사이의 값을 가짐. -1/1에 가까울수록 밀접한 음/양의 상관관계
 - 퀴즈는 [이 링크](https://github.com/doomsheart/Statistics_Data_Analyze/blob/master/Statistics_HongChanSik/Chap02_%EC%9E%90%EB%A3%8C%EC%9D%98_%EC%9A%94%EC%95%BD%EA%B3%BC_%EC%A4%91%EC%9A%94%ED%95%9C_%EA%B8%B0%EC%88%A0%ED%86%B5%EA%B3%84%EB%9F%89%EB%93%A4/Quiz_2.ipynb)에 jupyter-notebook으로 정리하였습니다.
+
