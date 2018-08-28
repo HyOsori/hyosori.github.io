@@ -67,7 +67,7 @@ doc/**/*.pdf
 [커밋하고 푸쉬까지 해버렸는데 되돌리고 싶다면 이 게시글을 참고하세요](https://cameliaovo.github.io/2018/02/27/Removing-sensitive-data-from-a-repository/)
 
 
-#### 어떤 내용을 추가해야하는지 감이 안잡히거나 일일히 추가하기 귀찮다면 
+#### 어떤 내용을 추가해야하는지 감이 안잡히거나 일일 추가하기 귀찮다면 
 1. [gitignore.io](https://www.gitignore.io/)라는 사이트인데 여기서 자기 개발환경, 언어를 적으면 쉽게 기본적인 `.gitignore`에 들어갈 내용을 만들 수 있어요.
 
 1. [github/gitignore](https://github.com/github/gitignore)에서도 언어, 환경, 프레임워크 등에 따라  `.gitignore`에 어떤 내용이 들어가야하는지를 쉽게 복붙할 수 있어요. (참고로 이 파일들은 github에서 레포지토리 처음 생성할때 추가하는 gitignore에 있는 그 파일들이에요)
