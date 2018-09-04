@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>오소리 tech blog</title>
+  
+  <subtitle>grow up with open source ecosystem</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://hyosori.github.io/"/>
+  <updated>2018-09-04T05:48:27.293Z</updated>
+  <id>http://hyosori.github.io/</id>
+  
+  <author>
+    <name>HanyangOSORI</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>얼굴 검출의 맛</title>
+    <link href="http://hyosori.github.io/2018/08/28/2018-08-62-16-15-00-taste-of-face-detection/"/>
+    <id>http://hyosori.github.io/2018/08/28/2018-08-62-16-15-00-taste-of-face-detection/</id>
+    <published>2018-08-28T07:15:00.000Z</published>
+    <updated>2018-09-04T05:48:27.293Z</updated>
+    
+    <content type="html"><![CDATA[<p>OpenCV는 Open Source Computer Vision Library의 약자로 이미지/영상 처리 라이브러리입니다.</p><p>언어는 C++, Java, Python등을 지원하고 있으며, 컴퓨터 비전에선 굉장히 유명한 라이브러리입니다.</p><p>이를 이용하여 파이썬으로 영상에서 얼굴을 검출하는 코드를 짜보도록 해보겠습니다.</p><p>전체적인 흐름은 다음과 같습니다.</p><pre><code>1. 동영상 로드2. 로드된 동영상에서 프레임 추출3. 얼굴범위 추출4. 범위 표시</code></pre><h2 id="1-동영상-로드"><a href="#1-동영상-로드" class="headerlink" title="1. 동영상 로드"></a>1. 동영상 로드</h2><p>우선 첫번째로 OpenCV를 import하고 동영상을 불러오는 코드를 짜보겠습니다.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2 <span class="keyword">as</span> cv</span><br><span class="line"><span class="comment"># 자신의 동영상 파일의 경로를 적어주면 됩니다.</span></span><br><span class="line">VIDEO_DIR = <span class="string">'drive/FaceClustering/'</span></span><br><span class="line">VIDEO_FILE_NAME = <span class="string">'PowerUp.mp4'</span></span><br><span class="line">video_capture = cv.VideoCapture(VIDEO_DIR + VIDEO_FILE_NAME)</span><br><span class="line">print(video_capture.isOpened())</span><br></pre></td></tr></table></figure></p><p>비디오가 잘 로드되었으면 True가 프린트 됩니다.</p><p>축하드립니다! 벌써 비디오를 로드 하셨습니다.</p><h2 id="2-로드된-동영상에서-프레임-추출"><a href="#2-로드된-동영상에서-프레임-추출" class="headerlink" title="2. 로드된 동영상에서 프레임 추출"></a>2. 로드된 동영상에서 프레임 추출</h2><p>두번째로 프레임을 추출해보겠습니다.</p><p>우선 프레임에대해 생소하신 분들을 위해 잠깐 설명드리면, OpenCV에서의 프레임이란 비디오의 한 장면을 의미합니다. </p><p>따라서 그의 형식은 이미지이며 2차원 행렬로 표현됩니다.</p><p>프레임을 추출하는 부분은 재사용이 많은 부분이므로 함수를 정의하겠습니다.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_frame</span><span class="params">(video_capture, frame)</span>:</span></span><br><span class="line">    video_capture.set(cv.CAP_PROP_POS_FRAMES, frame)</span><br><span class="line">    ret, img = video_capture.read()</span><br><span class="line">    <span class="keyword">return</span> img, ret</span><br></pre></td></tr></table></figure></p><p>위는 cv.VideaoCapture객체와 frame 위치를 인자로 받는 함수입니다.</p><p>우선 cv.VideaoCapture.set() 함수를 호출해서 frame을 설정하고 cv.VideaoCapture.read()로 읽습니다. </p><p>그러면 제대로 불러왔는지의 여부를 알려주는 ret와 이미지인 img를 받습니다.</p><p>잠시 cv.VideaoCapture.read() 함수를 살펴보면 이 함수는 cv.VideaoCapture 객체의 설정된 프레임을 읽고 다음 프레임으로 cv.VideaoCapture를 설정합니다.</p><p>따라서 cv.VideaoCapture.read()를 프레임 설정없이 반복적으로 부르면 프레임 재생이됩니다.</p><h2 id="3-얼굴범위-추출"><a href="#3-얼굴범위-추출" class="headerlink" title="3. 얼굴범위 추출"></a>3. 얼굴범위 추출</h2><p>다음으로는 얼굴범위를 찾아보겠습니다.</p><p>이 부분 또한 재사용이 많은 부분이므로 함수를 정의하겠습니다.</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_area_of_frame_face_recognition</span><span class="params">(img, face_cascade)</span>:</span></span><br><span class="line">    grayed_img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)</span><br><span class="line">    face_area = face_cascade.detectMultiScale(image=grayed_img,scaleFactor=<span class="number">1.3</span>,minNeighbors=<span class="number">5</span>)</span><br><span class="line">    <span class="keyword">return</span> face_area</span><br></pre></td></tr></table></figure><p>이 함수는 이미지를 받는 img와 Cascade Classifier인 face_cascade를 인자로 받고있습니다.</p><p>Cascade Classifier는 자신이 검출하려는 xml을 쓰면 됩니다. 여기선 얼굴을 검출하고 싶으므로 lbpcascade_frontalface_improved.xml를 썼습니다.</p><p>우선 BGR이미지를 GRAY이미지, 즉 회색이미지로 바꾸어 주고 grayed_img에 넣습니다.</p><p>그다음 cv.CascadeClassifier.detectMultiScale() 함수에 이미지와 scaleFactor와 minNeighbors를 설정해줍니다. </p><p>scaleFactor는 각 이미지 스케일마다 이미지가 얼마나 줄어들지, minNeighbors는 각 사각형 후보(얼굴 검출 범위)를 유지해야할 이웃 사각형의 개수를 의미합니다. </p><p>사진에서 얼굴을 검출하는 방식중 하나는, 사진보다 작은 액자 하나를 사직위에 놓고 액자를 왼쪽위에서부터 옆으로 조금씩 움직이며 액자안에 얼굴이 나왔을때 얼굴을 검출하는 방식이 있습니다. 이를 이미지 피라미드(image pyramid) 방식이라 합니다.</p><p>근데 액자를 조금씩 옮기다보면 같은 얼굴인데도 액자 범위안에 여러번 나타날때가 있습니다.(왼쪽얼굴, 정면얼굴, 오른쪽 얼굴 등등…) 따라서 얼굴 주위에 얼굴이라 생각된 액자의 위치가 있을테고, 따라서 하나의 얼굴에 여러개의 액자 위치가 나올 수 있습니다. 이를 막기위해 범위끼리 겹치는 것을 minNeighbors를 통해 조절해 주는 겁니다. </p><p>위 함수를 실행하면 그의 반환값은 얼굴 범위의 좌표입니다.</p><h2 id="4-범위-표시"><a href="#4-범위-표시" class="headerlink" title="4. 범위 표시"></a>4. 범위 표시</h2><p>각 프레임마다 보여줘야 함으로 재사용이 많으니 이 또한 함수로 정의하겠습니다.</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_img</span><span class="params">(img, faces)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> len(faces) != <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">for</span> (x, y, w, h) <span class="keyword">in</span> faces:</span><br><span class="line">            cv.rectangle(img, (x, y), (x + w, y + h), (<span class="number">255</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="number">1</span>)</span><br><span class="line">    cv.imshow(<span class="string">'FaceDetection'</span>, img)</span><br></pre></td></tr></table></figure><p>위의 <code>get_frame(video_capture, frame)</code>에서 반환한 img와 <code>get_area_of_frame_face_recognition(img, face_cascade)</code>에서 반환한 faces를 인자로 받고있는 함수입니다. </p><p>우선 얼굴이 검출되었는지를 알기위해 리스트 faces가 비었는지를 확인합니다. 얼굴이 검출이 안되었다면 faces는 비어서 길이가 0이겠죠?(데헷)</p><p>얼굴이 검출되었다면 각 범위마다 cv.rectangle()을 이용하여 사진에 얼굴영역에 네모를 그려줍니다.</p><p>그다음 cv.imshow()를 통해 결과사진을 보여줍시다.</p><p>이렇게 해서 동영상을 프레임단위로 자르고 얼굴을 검출하는 방법을 알아보았습니다. </p><hr><p>via</p><p><a href="https://github.com/HyOsori/FaceClusterer/blob/master/doomsheart/OpenCV_detection/video_face_recongition.py" target="_blank" rel="noopener">Osori FaceCluster - OpenCV_detection</a></p><p><a href="https://algoittm.github.io/2018/08/28/2018-08-62-16-15-00-taste-of-face-detection/" target="_blank" rel="noopener">Algoittm - 얼굴 검출의 맛</a></p>]]></content>
+    
+    <summary type="html">
+    
+      OpenCV는 Open Source Computer Vision Library의 약자로 이미지/영상 처리 라이브러리입니다.
+
+언어는 C++, Java, Python등을 지원하고 있으며, 컴퓨터 비전에선 굉장히 유명한 라이브러리입니다.
+
+이를 이용하여 파이썬으로 영상에서 얼굴을 검출하는 코드를 짜보도록 해보겠습니다.
+
+전체적인 흐름은 다음과 같습니다.
+
+1. 동영상 로드
+2. 로드된 동영상에서 프레임 추출
+3. 얼굴범위 추출
+4. 범위 표시
+
+
+1. 동영상 로드
+우선 첫번째로 OpenCV를 import하고 동영상을 불러오는 코드를 짜보겠습니다.
+1
+2
+3
+4
+5
+6
+
+
+import cv2 as cv
+# 자신의 동영상 파일의 경로를 적어주면 됩니다.
+VIDEO_DIR = &#39;drive/FaceClustering/&#39;
+VIDEO_FILE_NAME = &#39;PowerUp.mp4&#39;
+video_capture = cv.VideoCapture(VIDEO_DIR + VIDEO_FILE_NAME)
+print
+    
+    </summary>
+    
+    
+      <category term="OpenCV" scheme="http://hyosori.github.io/tags/opencv/"/>
+    
+      <category term="Python" scheme="http://hyosori.github.io/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>.Gitignore 다루기</title>
+    <link href="http://hyosori.github.io/2018/08/27/2018-08-28-Deal_with_gitignore/"/>
+    <id>http://hyosori.github.io/2018/08/27/2018-08-28-Deal_with_gitignore/</id>
+    <published>2018-08-27T16:59:48.000Z</published>
+    <updated>2018-09-04T05:48:27.293Z</updated>
+    
+    <content type="html"><![CDATA[<p> git으로 협업을 하다보면 <strong>이건 공유할 필요가 없는데….</strong> 라던가 <strong>이건 공유하면 안되는데?!</strong> 같은 파일이나 폴더들이 종종 생깁니다. 예를 들자면 ..</p><h4 id="이건-공유할-필요가-없는데…"><a href="#이건-공유할-필요가-없는데…" class="headerlink" title="이건 공유할 필요가 없는데…"></a>이건 공유할 필요가 없는데…</h4><p>.DS_Store (macOS에서 폴더 메타데이터를 저장하는 파일)<br>.idea (Jetbrain사에서 만든 IntelliJ라던가 PyCharm과 같은 IDE의 옵션 폴더)<br><strong>pycache</strong> , .pyc, .pyo … (미리 컴파일된 파이썬 코드)<br>venv (파이썬 가상환경)<br>거대하고 어마어마한 양의 input이나 로그 데이터 (물론 팀끼리는 공유해야 하지만 굳이 git으로 …?)</p><h4 id="이건-공유하면-안되는데"><a href="#이건-공유하면-안되는데" class="headerlink" title="이건 공유하면 안되는데?!"></a>이건 공유하면 안되는데?!</h4><p>각종 api 토큰<br>dbconfig같은 파일에 들어있을법한 db접근 정보 + (혹은 root 비밀번호 ..!!)<br>웹 스크래핑 등에 사용하기 위한 개발자 개인의 token, id / password <del>(이건 진짜 큰일인데 깃헙 돌아다니다보면 여럿 보여요ㅎㅎ 다 재발급 받았겠지요..)</del></p><p> <code>.gitignore</code> 파일을 만들고 그 안에 공유하고 싶지 않은 파일들에 대한 패턴을 적으면 저런 파일들을 무시할 수 있습니다.</p><p>갓 <code>git-scm</code>의 예를 가져오자면 ..</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cat .gitignore</span><br><span class="line">*.[oa]</span><br><span class="line">*~</span><br></pre></td></tr></table></figure><p> (cat 명령어는 모두 알 거라 믿고) 첫번째 줄은 <code>.o</code> 나 <code>.a</code>로 끝나는 파일을 Git이 무시하라는 것이고 두번째 줄은 ~로 끝나는 모든 파일을 무시하라는 것입니다. (.o나 .a는 내가 작성한 파일이 아니라 빌드할 때 생성되는 파일들이고, ~로 끝나는 애들은 vim같은데서 쓰다가 만 파일들? 입니다.)</p><p> 저런 것 말고도 위에서 적은 환경, 실행파일 등의 항목들도 아래 규칙에 따라서 추가할 수 있습니다. (from. git-scm)</p><ul><li>아무것도 없는 줄이나, #로 시작하는 줄은 무시한다.</li><li>표준 <a href="https://en.wikipedia.org/wiki/Glob_(programming" target="_blank" rel="noopener">Glob</a> 패턴을 사용한다. (Glob에 대한 설명은 링크 참조)</li><li>디렉토리는 슬래시(/)를 끝에 사용하는 것으로 표현한다.</li><li>느낌표(!)로 시작하는 패턴의 파일은 무시하지 않는다.</li></ul><h4 id="또-다른-예시"><a href="#또-다른-예시" class="headerlink" title="또 다른 예시"></a>또 다른 예시</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ignore all .a files</span></span><br><span class="line">*.a</span><br><span class="line"></span><br><span class="line"><span class="comment"># but do track lib.a, even though you're ignoring .a files above</span></span><br><span class="line">!lib.a</span><br><span class="line"></span><br><span class="line"><span class="comment"># only ignore the TODO file in the current directory, not subdir/TODO</span></span><br><span class="line">/TODO</span><br><span class="line"></span><br><span class="line"><span class="comment"># ignore all files in the build/ directory</span></span><br><span class="line">build/</span><br><span class="line"></span><br><span class="line"><span class="comment"># ignore doc/notes.txt, but not doc/server/arch.txt</span></span><br><span class="line">doc/*.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># ignore all .pdf files in the doc/ directory and any of its subdirectories</span></span><br><span class="line">doc/**/*.pdf</span><br></pre></td></tr></table></figure><p>기왕이면 프로젝트 처음 만들 때 먼저 만들어 두는 것을 추천해요. (커밋한 뒤 rebase로 되돌리는 것까지는 몰라도 커밋하고 푸쉬한 뒤 되돌리려면…)</p><p><a href="https://cameliaovo.github.io/2018/02/27/Removing-sensitive-data-from-a-repository/" target="_blank" rel="noopener">커밋하고 푸쉬까지 해버렸는데 되돌리고 싶다면 이 게시글을 참고하세요</a></p><h4 id="어떤-내용을-추가해야하는지-감이-안잡히거나-일일이-추가하기-귀찮다면"><a href="#어떤-내용을-추가해야하는지-감이-안잡히거나-일일이-추가하기-귀찮다면" class="headerlink" title="어떤 내용을 추가해야하는지 감이 안잡히거나 일일이 추가하기 귀찮다면"></a>어떤 내용을 추가해야하는지 감이 안잡히거나 일일이 추가하기 귀찮다면</h4><ol><li><p><a href="https://www.gitignore.io/" target="_blank" rel="noopener">gitignore.io</a>라는 사이트인데 여기서 자기 개발환경, 언어를 적으면 쉽게 기본적인 <code>.gitignore</code>에 들어갈 내용을 만들 수 있어요.</p></li><li><p><a href="https://github.com/github/gitignore" target="_blank" rel="noopener">github/gitignore</a>에서도 언어, 환경, 프레임워크 등에 따라  <code>.gitignore</code>에 어떤 내용이 들어가야하는지를 쉽게 복붙할 수 있어요. (참고로 이 파일들은 github에서 레포지토리 처음 생성할때 추가하는 gitignore에 있는 그 파일들이에요)</p></li></ol><h3 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h3><p>git-scm : <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring" target="_blank" rel="noopener">https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring</a><br>동일한 글이 <a href="https://cameliaovo.github.io/2018/08/27/Deal-with-gitignore/" target="_blank" rel="noopener">여기</a>에도 있습니다.</p>]]></content>
+    
+    <summary type="html">
+    
+      git으로 협업을 하다보면 이건 공유할 필요가 없는데…. 라던가 이건 공유하면 안되는데?! 같은 파일이나 폴더들이 종종 생깁니다. 예를 들자면 ..
+
+이건 공유할 필요가 없는데…
+.DS_Store (macOS에서 폴더 메타데이터를 저장하는 파일)
+.idea (Jetbrain사에서 만든 IntelliJ라던가 PyCharm과 같은 IDE의 옵션 폴더)
+pycache , .pyc, .pyo … (미리 컴파일된 파이썬 코드)
+venv (파이썬 가상환경)
+거대하고 어마어마한 양의 input이나 로그 데이터 (물론 팀끼리는 공유해야 하지만 굳이 git으로 …?)
+
+이건 공유하면 안되는데?!
+각종 api 토큰
+dbconfig같은 파일에 들어있을법한 db접근 정보 + (혹은 root 비밀번호 ..!!)
+웹 스크래핑 등에 사용하기 위한 개발자 개인의 token, id / password (이건 진짜 큰일인데 깃헙 돌아다니다보면 여럿 보여요ㅎㅎ 다 재발급 받았겠지요..)
+
+ .gitignore 파일을
+    
+    </summary>
+    
+    
+      <category term="git" scheme="http://hyosori.github.io/tags/git/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>통계학 홍찬식</title>
+    <link href="http://hyosori.github.io/2018/04/11/2018-04-12-Statistic_HongChanSik/"/>
+    <id>http://hyosori.github.io/2018/04/11/2018-04-12-Statistic_HongChanSik/</id>
+    <published>2018-04-11T23:04:26.000Z</published>
+    <updated>2018-09-04T05:48:27.293Z</updated>
+    
+    <content type="html"><![CDATA[<hr><h1 id="Chap-01-서론"><a href="#Chap-01-서론" class="headerlink" title="Chap.01 서론"></a>Chap.01 서론</h1><p>통계학은 자료를 수집하여 분석함으로써 자료가 가진 정보를 올바르게 해석할 수 있도록 해 주는 학문이다. 부분을 보고 전체에 대한 추론을 하는 것이 바로 통계학이다. 부분을 보고 전체에 대해 행하는 추론은 확률적 명제가 될 수밖에 없다.</p><h2 id="1-1-기술통계학과-추론통계학"><a href="#1-1-기술통계학과-추론통계학" class="headerlink" title="1.1 기술통계학과 추론통계학"></a>1.1 기술통계학과 추론통계학</h2><ul><li>기술통계학(descriptive statistics): 수집된 자료를 이해하기 쉽도록 요약하여 기술하는 것. 사분위범위 활용.</li><li>추론통계학(inferential statistics): 일부만 관측한 자료를 효율적으로 이용하여 전체에 대해 추론하는 것.</li></ul><h2 id="1-2-모집단과-표본"><a href="#1-2-모집단과-표본" class="headerlink" title="1.2 모집단과 표본"></a>1.2 모집단과 표본</h2><ul><li>모집단(population): 관심의 대상인 집단 전체</li><li>표본(sample): 모집단의 부분집합</li><li>모수(parameter): 모집단의 특성을 나타내는 값. 미지의 고정된 상수(unknown but fixed constant), 표본이 어떻게 추출되든 모수의 값이 변하지 않음.</li><li>통계량(statistic): 표본의 특성을 나타내는 값. 표본추출에 따른 변동을 보이는 확률변수(random variable)</li><li>표본오차(sampling error): 통계량과 모수의 차이. 발생원인-&gt;대개 우연. 표본크기가 커질수록 오차 낮아짐. 반례) </li><li>비표본오차(nonsampling error), 편의(bias):모집단을 잘 대표하지 못하는 표본추출.</li></ul><h2 id="1-3-실험계획과-표본조사"><a href="#1-3-실험계획과-표본조사" class="headerlink" title="1.3 실험계획과 표본조사"></a>1.3 실험계획과 표본조사</h2><ul><li>실험계획: 어떤요인이 연구자가 관심을 가진 변수에 미치는 영향을 알아볼때 이용. 다른 요인의 영향을 통제하는 것이 중요</li><li>표본조사: 통제된 실험이 불가능한 분야. 모집단을 잘 대표하는 표본을 추출.</li><li>표본추출 방법:<ol><li>무작위추출법(simple random sampling): 모집단에 속하는 모든 원소들이 표본에 포함될 가능성이 동일하도록 표본을 추출하는 방법.</li><li>계통추출법(systematic sampling): 첫 번째 원소를 무작위로 추출후 매번 k번째 요소를 표본으로 삼는것. (k, t+k, 2t+k, 3t+k….)</li><li>층화추출법(stratified sampling): 매우 이질적인 모집단을 층(stratum)이라 부르는 몇 개의 집단으로 구분하고 각 층에 일정한 표본 수를 할당한 다음 층별로 단순무작위표본을 추출하는 것. 하나의 층 내의 원소들이 가능한 한 동질적이어야 하는것이 중요. -&gt; 적은 수의 표본으로도 그 층의 특성을 잘 파악 가능.</li><li>집락추출법(cluster sampling): 모집단을 집락(cluster)이라 부르는 집단으로 구분하고 일정수의 집락을 무작위로 추출한 다음 선택된 집락에서 단순 무작위표본을 추출하는 방법. (층화추출법과의 차이?) :집락내의 원소들이 이질적일때 효율적.  단순 무작위추출법이나 중화추출법에 비해 많은 수의 표본은 요구. 그러나 빠른 시간내에 관측가능.</li></ol></li></ul><h2 id="1-4-회귀분석"><a href="#1-4-회귀분석" class="headerlink" title="1.4 회귀분석"></a>1.4 회귀분석</h2><ul><li>회귀분석(regression analysis): 이론이 현실을 잘 설명하는지 실증적으로 분석하기 위해 두 변수사이의 관계를 통계자료를 이용하여 파악하는 통계기법. </li><li>단순선형회귀모형: 독립변수와 종속변수라 부르는 오직 두 개의 변수만을 고려.</li><li>다중선형회귀모형: 하나의 종속변수를 둘 이상의 독립변수로 설명하는 모형.</li></ul><hr><h1 id="Chap-02-자료의-요약과-중요한-기술통계량들"><a href="#Chap-02-자료의-요약과-중요한-기술통계량들" class="headerlink" title="Chap.02 자료의 요약과 중요한 기술통계량들"></a>Chap.02 자료의 요약과 중요한 기술통계량들</h1><h2 id="2-1-도수분포와-히스토그램"><a href="#2-1-도수분포와-히스토그램" class="headerlink" title="2.1 도수분포와 히스토그램"></a>2.1 도수분포와 히스토그램</h2><ul><li>도수(frequency)</li><li><p>도수분포(frequency distribution): 자료를 몇 개의 계급구간으로 나눈 다음 각 구간에 속하는 항목의 수를 표로 만든 것.</p><ul><li><p>자료</p><p><img src="/images/2018-04-12-Statistic_HongChanSik/2_1_1_data.gif" alt="data"></p></li><li><p>도수 분표</p></li></ul></li></ul><table><thead><tr><th>계급구간</th><th>도수</th></tr></thead><tbody><tr><td>0~5</td><td>8</td></tr><tr><td>6~10</td><td>9</td></tr><tr><td>11~15</td><td>4</td></tr><tr><td>16~20</td><td>3</td></tr><tr><td>21~25</td><td>1</td></tr><tr><td>합</td><td>25</td></tr></tbody></table><ul><li>상대도수(relative frequency): 도수를 항목의 총수로 나눈 값. 이것으로 표를 만든게 도수 분포표.</li><li>히스토그램(histogram): 위를 그래프로 그린 것.</li><li>누적도수분포(cumulative frequency distribution), 누적상대도수분포(cumulative relative frequency distribution)</li></ul><h2 id="2-2-자료의-위치를-나타내는-통계량"><a href="#2-2-자료의-위치를-나타내는-통계량" class="headerlink" title="2.2 자료의 위치를 나타내는 통계량"></a>2.2 자료의 위치를 나타내는 통계량</h2><ul><li>평균(average, mean): 자료의 중심위치를 파악.</li><li>중위수(median): 자료를 크기 순으로 정리 할 때 중간에 위치하는 값. 홀수=(n+1/2)번, 짝수=n/2번과 n+1/2번의 평균.</li><li>최빈값(mode): 관측된 도구가 가장 많은 값.</li><li><p>그외 백분위수(percentile), 십분위수(decile), 사분위수(quartile)</p><p><img src="/images/2018-04-12-Statistic_HongChanSik/2_2_1_quartile.png" alt="quatile"></p></li></ul><h2 id="2-3-자료의-변동성을-나타내는-통계량"><a href="#2-3-자료의-변동성을-나타내는-통계량" class="headerlink" title="2.3 자료의 변동성을 나타내는 통계량"></a>2.3 자료의 변동성을 나타내는 통계량</h2><ul><li><p>분산(variance): 자료의 변동성을 측정하기 위해 사용되는 것.</p><p><img src="/images/2018-04-12-Statistic_HongChanSik/2_3_1_variance.gif" alt="variance"></p></li><li>자유도(degree of freedom): 관측치의 수에서 1을 뺀 n-1, 1뺀 이유는 8장에서 공부<ul><li>Ex) a는 넓은범위 흩어져 있고 b는 평균주변에 밀집 -&gt; 변동성 a &gt; b, 분산 a &gt; b</li></ul></li><li>표준편차(standard deviation): 분산의 제곱근, 변동성에 비례</li><li>평균, 분산, 표준편차 모두 평균에 먼 값, 즉 이상치(outlier)에 의해 영향을 받음</li><li>사분위 범위(IQR, interquartile range): <img src="/images/2018-04-12-Statistic_HongChanSik/2_3_2_IQR.gif" alt="IQR"></li></ul><h2 id="2-4-도수분포형태의-자료"><a href="#2-4-도수분포형태의-자료" class="headerlink" title="2.4 도수분포형태의 자료"></a>2.4 도수분포형태의 자료</h2><h2 id="2-5-산포도와-상관계수"><a href="#2-5-산포도와-상관계수" class="headerlink" title="2.5 산포도와 상관계수"></a>2.5 산포도와 상관계수</h2><ul><li>산포도(scatter diagram): 하나의 변수를 횡축에, 그리고 다른 하나의 변수를 종축에 측정 후 각 표본점을 좌표평면 상의 점으로 나타낸 것</li><li>공분산(covariance):<br><img src="/images/2018-04-12-Statistic_HongChanSik/2_5_1_covariance.gif" alt="covariance"><ul><li>공분산은 부호만 의미가 있을 뿐 크기는 아무런 의미를 가지지 못함</li></ul></li><li>상관계수(correlation coefficient): <ul><li>측정단위에 따라 크기가 변하는 공분산의 단점을 보완.</li><li><img src="/images/2018-04-12-Statistic_HongChanSik/2_5_2_correlation_coefficient.gif" alt="correlation coefficient"></li><li>-1과 1사이의 값을 가짐. -1/1에 가까울수록 밀접한 음/양의 상관관계</li></ul></li><li>퀴즈는 <a href="https://github.com/doomsheart/Statistics_Data_Analyze/blob/master/Statistics_HongChanSik/Chap02_%EC%9E%90%EB%A3%8C%EC%9D%98_%EC%9A%94%EC%95%BD%EA%B3%BC_%EC%A4%91%EC%9A%94%ED%95%9C_%EA%B8%B0%EC%88%A0%ED%86%B5%EA%B3%84%EB%9F%89%EB%93%A4/Quiz_2.ipynb" target="_blank" rel="noopener">이 링크</a>에 jupyter-notebook으로 정리하였습니다.</li></ul><h1 id="Chap-03-사건과-확률"><a href="#Chap-03-사건과-확률" class="headerlink" title="Chap.03 사건과 확률"></a>Chap.03 사건과 확률</h1><h2 id="3-1-표본공간과-사건"><a href="#3-1-표본공간과-사건" class="headerlink" title="3.1 표본공간과 사건"></a>3.1 표본공간과 사건</h2><ul><li>확률실험(random experiment) : 결과를 정확하게 예측할 수 없는 실험. 무작위 추출에 이용.</li><li>표본공간(sample space) : S 또는 Ω로 표기. 확률실험에서 나타날 수 있는 모든 결과들을 모아놓은 집합.</li><li>표본점(sample point) : 표본공간의 원소.</li><li>사건(event) : 표본공간의 부분집합.</li><li>상호배반(mutually exclusive) : 한 표본공간 내의 두 사건 A와 B가 동시에 발생할 수 없을 때. A∩B = Φ</li></ul><h2 id="3-2-확률과-확률공리"><a href="#3-2-확률과-확률공리" class="headerlink" title="3.2 확률과 확률공리"></a>3.2 확률과 확률공리</h2><ul><li>확률공리 : 확률이 만족해야 할 조건을 약속해 놓은 것.<ul><li>(1) 모든 사건 A에 대해 0 ≤ P(A) ≤ 1 이다.</li><li>(2) P(S) = 1 이고, P(Φ) = 0 이다.</li><li>(3) 두 사건 A와 B가 상호배반이면 P(A∪B) = P(A) + P(B)</li></ul></li><li>하나의 사건이 일어날 확률을 구하는 방법<ul><li>(1) 고전적 방법 :<ul><li>1 / 가능한 모든 결과의 수</li></ul></li><li>(2) 상대도수법 :<ul><li>일반적으로 유사한 조건하에서 관측된 사건발생의 상대도수를 그 사건의 확률로 보는 것.</li></ul></li><li>(3) 주관적 확률:<ul><li>위 두개의 방법은 객관적 확률(누가 계산하여도 동일한 값을 가짐)인 반면, 실험의 결과들이 동일한 발생가능성을 가지고 있지도 않고 상대도수 자료도 구할 수 없을때 자신이 가진 모든 정보를 종합하여 사건의 발생 가능성에 대한 믿음의 정도를 0과 1사이의 숫자로 나타낸 것.</li></ul></li></ul></li></ul><h2 id="3-3-확률의-덧셈법칙"><a href="#3-3-확률의-덧셈법칙" class="headerlink" title="3.3 확률의 덧셈법칙"></a>3.3 확률의 덧셈법칙</h2><ul><li><img src="/images/2018-04-12-Statistic_HongChanSik/3_3_1_sum_of_probability.gif" alt="sum_of_probability"></li><li>A ⊂ B 이면 P(A) ≤ P(B)</li><li>P(A∪B) = P(A) + P(B) - P(A∩B)</li></ul><h2 id="3-4-조건부확률과-통계적-독립"><a href="#3-4-조건부확률과-통계적-독립" class="headerlink" title="3.4 조건부확률과 통계적 독립"></a>3.4 조건부확률과 통계적 독립</h2><ul><li><p>조건부확률 : P(A|B) = 사건 B가 발생하였을때 사건 A가 일어날 확률.</p><p><img src="/images/2018-04-12-Statistic_HongChanSik/3_4_1_conditional_probability.gif" alt="conditional_probability"></p></li><li>확률계산의 곱셈법칙<ul><li>P(A∩B) = P(A)P(B|A)</li></ul></li><li>독립, 통계적 독립, 확률적 독립:<ul><li>다음 세 조건중 하나라도 만족하면 독립</li><li>(1) P(A|B) = P(A)</li><li>(2) P(B|A) = P(B)</li><li>(3) P(A∩B) = P(A)P(B)</li></ul></li></ul><h2 id="3-5-베이즈의-정리-Bayes’-Theorem"><a href="#3-5-베이즈의-정리-Bayes’-Theorem" class="headerlink" title="3.5 베이즈의 정리 (Bayes’ Theorem)"></a>3.5 베이즈의 정리 (Bayes’ Theorem)</h2><ul><li>사전확률 : 조건부 확률에서 사건이 발생하기 전 평가한 확률. ex) P(A), P(B)</li><li>사후확률 : 조건부 확률에서 사건이 발생한 후 수정된 확률. ex) P(A|B)</li><li><p>베이즈의 정리 :</p><p><img src="/images/2018-04-12-Statistic_HongChanSik/3_5_1_bayes_condition.gif" alt="bayes_condition"></p><p><img src="/images/2018-04-12-Statistic_HongChanSik/3_5_2_bayes_thm.gif" alt="bayes_thm"></p><p>m개의 상호배반인 사건들의 합집합이 표본공간과 같아지는 경우</p><p><img src="/images/2018-04-12-Statistic_HongChanSik/3_5_3_bayes_thm_m.gif" alt="bayes_thm_m"></p></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      Chap.01 서론
+통계학은 자료를 수집하여 분석함으로써 자료가 가진 정보를 올바르게 해석할 수 있도록 해 주는 학문이다. 부분을 보고 전체에 대한 추론을 하는 것이 바로 통계학이다. 부분을 보고 전체에 대해 행하는 추론은 확률적 명제가 될 수밖에 없다.
+
+1.1 기술통계학과 추론통계학
+ * 기술통계학(descriptive statistics): 수집된 자료를 이해하기 쉽도록 요약하여 기술하는 것. 사분위범위 활용.
+ * 추론통계학(inferential statistics): 일부만 관측한 자료를 효율적으로 이용하여 전체에 대해 추론하는 것.
+
+1.2 모집단과 표본
+ * 모집단(population): 관심의 대상인 집단 전체
+ * 표본(sample): 모집단의 부분집합
+ * 모수(parameter): 모집단의 특성을 나타내는 값. 미지의 고정된 상수(unknown but fixed constant), 표본이 어떻게 추출되든 모수의 값이 변하지 않음.
+ * 통계량(statistic):
+    
+    </summary>
+    
+    
+      <category term="math" scheme="http://hyosori.github.io/tags/math/"/>
+    
+      <category term="statistics" scheme="http://hyosori.github.io/tags/statistics/"/>
+    
+      <category term="jupyter_notebook" scheme="http://hyosori.github.io/tags/jupyter-notebook/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>제 2회 네이버 오픈소스 세미나</title>
+    <link href="http://hyosori.github.io/2018/03/30/2018-03-30-NaverSeminar/"/>
+    <id>http://hyosori.github.io/2018/03/30/2018-03-30-NaverSeminar/</id>
+    <published>2018-03-30T04:38:00.000Z</published>
+    <updated>2018-09-04T05:48:27.289Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="제-2회-네이버-오픈소스-세미나"><a href="#제-2회-네이버-오픈소스-세미나" class="headerlink" title="제 2회 네이버 오픈소스 세미나"></a>제 2회 네이버 오픈소스 세미나</h1><h4 id="본-글은-2-23일에-진행-된-제-2회-네이버-오픈소스-세미나를-듣고-적은-후기입니다"><a href="#본-글은-2-23일에-진행-된-제-2회-네이버-오픈소스-세미나를-듣고-적은-후기입니다" class="headerlink" title="본 글은 2.23일에 진행 된 제 2회 네이버 오픈소스 세미나를 듣고 적은 후기입니다."></a>본 글은 2.23일에 진행 된 제 2회 네이버 오픈소스 세미나를 듣고 적은 후기입니다.</h4><h4 id="주관적인-내용이니-혹여-잘못된-내용이-있다면-지적-바랍니다"><a href="#주관적인-내용이니-혹여-잘못된-내용이-있다면-지적-바랍니다" class="headerlink" title="주관적인 내용이니 혹여 잘못된 내용이 있다면 지적 바랍니다."></a>주관적인 내용이니 혹여 잘못된 내용이 있다면 지적 바랍니다.</h4><h2 id="slide-link"><a href="#slide-link" class="headerlink" title="slide link"></a>slide link</h2><h4 id="1-개발자의-흔한-취미-오픈소스-개발-권민재-선데이토즈-https-www-slideshare-net-deview-ss-89345492"><a href="#1-개발자의-흔한-취미-오픈소스-개발-권민재-선데이토즈-https-www-slideshare-net-deview-ss-89345492" class="headerlink" title="1. 개발자의 흔한 취미 : 오픈소스 개발 - 권민재 (선데이토즈) : https://www.slideshare.net/deview/ss-89345492"></a>1. 개발자의 흔한 취미 : 오픈소스 개발 - 권민재 (선데이토즈) : <a href="https://www.slideshare.net/deview/ss-89345492" target="_blank" rel="noopener">https://www.slideshare.net/deview/ss-89345492</a></h4><h4 id="2-egjs-view360-개발기-김희재-네이버-https-www-slideshare-net-deview-egjsview360"><a href="#2-egjs-view360-개발기-김희재-네이버-https-www-slideshare-net-deview-egjsview360" class="headerlink" title="2. egjs-view360 개발기 - 김희재 (네이버) : https://www.slideshare.net/deview/egjsview360"></a>2. egjs-view360 개발기 - 김희재 (네이버) : <a href="https://www.slideshare.net/deview/egjsview360" target="_blank" rel="noopener">https://www.slideshare.net/deview/egjsview360</a></h4><h4 id="3-오픈소스-생태계-일원으로서의-개발자-변정훈-Outsider-https-www-slideshare-net-deview-ss-88961115"><a href="#3-오픈소스-생태계-일원으로서의-개발자-변정훈-Outsider-https-www-slideshare-net-deview-ss-88961115" class="headerlink" title="3. 오픈소스 생태계 일원으로서의 개발자 - 변정훈 (Outsider) : https://www.slideshare.net/deview/ss-88961115"></a>3. 오픈소스 생태계 일원으로서의 개발자 - 변정훈 (Outsider) : <a href="https://www.slideshare.net/deview/ss-88961115" target="_blank" rel="noopener">https://www.slideshare.net/deview/ss-88961115</a></h4><hr><h2 id="목차"><a href="#목차" class="headerlink" title="목차"></a>목차</h2><ol><li>개발자의 흔한 취미 : 오픈소스 개발 - 권민재 (선데이토즈)</li><li>egjs-view360 개발기 - 김희재 (네이버)</li><li>오픈소스 생태계 일원으로서의 개발자 - 변정훈 (Outsider)</li></ol><hr><h2 id="개발자의-흔한-취미-오픈소스-개발-권민재-선데이토즈"><a href="#개발자의-흔한-취미-오픈소스-개발-권민재-선데이토즈" class="headerlink" title="개발자의 흔한 취미 : 오픈소스 개발 - 권민재 (선데이토즈)"></a>개발자의 흔한 취미 : 오픈소스 개발 - 권민재 (선데이토즈)</h2><ul><li>요약<br>PR만 contribute가 아니다! 겁먹지 말고 오픈소스 생태계에 기여하자</li></ul><p><strong>막 오픈소스 생태계에 발을 들인 사람들을 위한 내용입니다.</strong></p><hr><ul><li>주요 내용  </li></ul><h3 id="오픈-소스-참여-방법들"><a href="#오픈-소스-참여-방법들" class="headerlink" title="오픈 소스 참여 방법들"></a>오픈 소스 참여 방법들</h3><p><img src="/images/first.png" alt="overview">  </p><ol><li>기능 추가/개선  </li></ol><p>주로 사용하던 오픈 소스에 원하는 기능이 없거나 개선 방법이 떠올랐을 때<br>repository에 해당 기능에 대하여 issue를 날리고 여건이 되면 직접 PR을 날림  </p><ol start="2"><li>이슈 보고 및 해결  </li></ol><p>코드 퀄리티에 아주 중요한 비중을 차지함<br>주로 사용하던 오픈 소스에 문제점을 발견했을 때<br>이미 reporting 된 issue라면 커뮤니티에 이를 공유<br>아직 reporting 되지 않았다면 issue를 날리고 여건이 되면 직접 PR을 날림  </p><ol start="3"><li>번역  </li></ol><p>주로 사용하던 오픈 소스에 원하는 언어 버전이 지원되지 않을 때<br>문서화로서의 기여<br>해당 언어로 문서화 하기 전에 repository의 번역 규칙을 살피고 이미 번역이 진행 중인지 issue를 통해 확인  </p><ol start="4"><li>직접 운영  </li></ol><p>개인적으로 가장 어렵다고 생각<br><img src="/images/second.png" alt="overview"><br><strong>README</strong> : 아무리 좋은 오픈 소스라도 문서화가 제대로 되어있지 않는다면 사용자를 끌어 모으기 어려움<br><strong>코드 퀄리티</strong> : 향후 기여할 사람들을 위해 좋은 퀄리티를 유지해야함<br><strong>커밋 / 브랜치 관리</strong> : 오픈 소스 사용자 &amp; 기여할 사람들을 위해 깔끔하게 관리해야하며 이에 대한 규칙을 정립해야 함<br><strong>프로젝트 관리</strong> : 전반적인 프로젝트에 대한 내규를 확립해야 함. Issue report에 대한 규칙이 주를 이룸  </p><hr><ul><li>감상  </li></ul><p>현재 오소리에서는 위에 열거 된 기여 방법들 중 가장 어려운 ‘직접 운영’만을 진행하고 있다. (2017-2학기 기준)<br>하지만 직접 운영하는 오픈 소스 프로젝트들 중 외부 사용자들이 유입된 경우는 없으며 프로젝트 관리 또한 아쉬운 실정이다.<br>물론 과거에 GSOC 같은 큰 행사를 통해 다른 방법으로 기여할 방안을 강구한 적이 있었지만 진입 장벽이 높아 드러낼 만한 실적을 내지 못하였다.<br>따라서 오픈 소스 동아리로서의 정체성을 찾으려면 단계를 밟아가며 오픈 소스 생태계 혹은 커뮤니티에 녹아들어야 한다고 생각한다.<br>구체적으로는 자신이 주로 쓰는 오픈 소스 프로젝트에서 기여할 점을 찾는것이 시발점이 될 것이다.  </p><hr><h2 id="egjs-view360-개발기-김희재-네이버"><a href="#egjs-view360-개발기-김희재-네이버" class="headerlink" title="egjs-view360 개발기 - 김희재 (네이버)"></a>egjs-view360 개발기 - 김희재 (네이버)</h2><ul><li>요약<br>오픈 소스 생태계를 이용한 효율적인 비즈니스  </li></ul><p><strong>비즈니스라는 측면에서 동아리 활동목적과는 상관이 없기 때문에 생략</strong><br><strong>다만 프로젝트 관리 시 도움이 되는 슬라이드가 있어 공유함</strong><br><img src="/images/third.png" alt="overview"> </p><hr><h2 id="오픈소스-생태계-일원으로서의-개발자-변정훈-Outsider"><a href="#오픈소스-생태계-일원으로서의-개발자-변정훈-Outsider" class="headerlink" title="오픈소스 생태계 일원으로서의 개발자 - 변정훈 (Outsider)"></a>오픈소스 생태계 일원으로서의 개발자 - 변정훈 (Outsider)</h2><ul><li>요약<br>오픈 소스라는 숲에서의 나의 역할</li></ul><p><strong>중간에 회사 이야기도 하셨는데 동아리와는 관련이 없어서 생략</strong></p><hr><ul><li>주요 내용</li></ul><ol><li>PR이 closed 될 지라도 기죽지 말자  </li></ol><p>repository의 내규나 maintainer의 판단에 따라 야심차게 보낸 PR이 closed 될 수 있다.<br>하지만 그렇다고 해서 망연자실하지 말고 계속 도전 해보자<br>다만 PR하려는 repository의 내규나 담당 maintainer와 충분히 이야기 해 본 다음 다시 도전 할 것  </p><ol start="2"><li>contribution  </li></ol><p><img src="/images/fourth.png" alt="overview"> </p><p>프로젝트 홍보 측면에서는 주로 twitter나 reddit 커뮤니티를 이용하니 참고할 것<br><strong>많은 부분이 첫 강연과 유사하여 대부분 생략</strong>  </p><ol start="3"><li>maintainer도 사람이다  </li></ol><p>오픈 소스를 제품 취급하지 말 것! 자신이 속한 팀이라고 생각하자<br>오픈 소스 생태계는 알아서 유지 되지 않는다. 상호 존중이 여기에서 거름 역할을 한다.<br>특히 Bus factor가 놓은 maintainer들을 존중하자.<br><strong>(Bus factor? : 팀원 중 일부가 버스에 치였을 때 프로젝트에 영향을 줄 수 있는 수)</strong></p><h3 id="상호-존중에-대한-구체적-방안들"><a href="#상호-존중에-대한-구체적-방안들" class="headerlink" title="상호 존중에 대한 구체적 방안들"></a>상호 존중에 대한 구체적 방안들</h3><ul><li>특정 오픈소스에 대한 비난보다는 피드백  </li><li>이슈 보고를 할 때는 재현가능한 예제와 상황을 제공해야 한다  </li><li>자신의 이슈를 빨리 처리해 달라고 요청하지 말자  </li><li>처리할 수 있는 이슈는 답변을 달거나 PR을 날린다  </li><li>후원하면 더 좋다 : <a href="https://opencollective.com/" target="_blank" rel="noopener">https://opencollective.com/</a>  </li></ul><hr><ul><li>감상  </li></ul><p>첫 번째 강연과 유사한 내용이나 오픈 소스 생태계 일원으로서 가져야할 자세에 대하여 생각해보는 계기가 되었다.<br>오픈 소스 기여를 시작한 시기와는 상관없이 좋은 지침들이라고 생각한다.  </p><hr>]]></content>
+    
+    <summary type="html">
+    
+      제 2회 네이버 오픈소스 세미나
+본 글은 2.23일에 진행 된 제 2회 네이버 오픈소스 세미나를 듣고 적은 후기입니다.
+주관적인 내용이니 혹여 잘못된 내용이 있다면 지적 바랍니다.
+slide link
+1. 개발자의 흔한 취미 : 오픈소스 개발 - 권민재 (선데이토즈) : https://www.slideshare.net/deview/ss-89345492
+2. egjs-view360 개발기 - 김희재 (네이버) : https://www.slideshare.net/deview/egjsview360
+3. 오픈소스 생태계 일원으로서의 개발자 - 변정훈 (Outsider) : https://www.slideshare.net/deview/ss-88961115
+
+
+
+목차
+ 1. 개발자의 흔한 취미 : 오픈소스 개발 - 권민재 (선데이토즈)
+ 2. egjs-view360 개발기 - 김희재 (네이버)
+ 3. 오픈소스 생태계 일원으로서의 개발자 - 변정훈 (Outsider)
+
+
+
+
+개발자의 흔한 취미 
+    
+    </summary>
+    
+    
+      <category term="seminar" scheme="http://hyosori.github.io/tags/seminar/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>기술블로그 글쓰기 가이드</title>
+    <link href="http://hyosori.github.io/2018/03/30/post_guide/"/>
+    <id>http://hyosori.github.io/2018/03/30/post_guide/</id>
+    <published>2018-03-30T04:24:30.000Z</published>
+    <updated>2018-09-04T05:48:27.293Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Hexo를-몰라도-쓸-수-있는-글쓰기-가이드"><a href="#Hexo를-몰라도-쓸-수-있는-글쓰기-가이드" class="headerlink" title="Hexo를 몰라도 쓸 수 있는 글쓰기 가이드"></a>Hexo를 몰라도 쓸 수 있는 글쓰기 가이드</h2><ol><li><p>자기 레포로 Fork 떠가서 작업</p></li><li><p><code>_post</code> 디렉토리에 <code>yyyy-mm-dd-title.md</code>로 게시글 작성 <strong>title은 절대 겹치면 안돼요!</strong></p></li><li><p>파일 상단에 <code>front-matter</code> 작성</p></li></ol><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title:             # 포스트의 제목을 작성해 주세요</span><br><span class="line">date:              # 작성 일자 YYYY-MM-DD HH:MM:SS 형태로 작성해 주세요</span><br><span class="line">author:            # 작성자 이름 혹은 깃허브 아이디</span><br><span class="line">githublink:        # 작성자 깃허브 프로필 링크 (ex. https://github.com/CameliaOvO)</span><br><span class="line">tags:              # 태그 목록 [태그1, 태그2, ... ] 가능하다면 영문소문자, 숫자, 하이픈으로만 ..</span><br><span class="line">---</span><br></pre></td></tr></table></figure><ol><li>작성된 글을 commit 후 PR 날려주세요! merge되면 자동으로 빌드해서 게시글이 올라갑니다.</li></ol><h2 id="추가-팁"><a href="#추가-팁" class="headerlink" title="추가 팁"></a>추가 팁</h2><ol><li>이미지 파일은 <code>source/images</code>에 업로드 후 <code>/images/imageName.png</code>와 같이 사용하시면 됩니다.</li><li>디자인 센스가 극악이라 저게 최선이었습니다. 디자인 변경 PR <strong>언제든지 환영합니다.</strong></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      Hexo를 몰라도 쓸 수 있는 글쓰기 가이드
+ 1. 자기 레포로 Fork 떠가서 작업
+    
+    
+ 2. _post 디렉토리에 yyyy-mm-dd-title.md로 게시글 작성 title은 절대 겹치면 안돼요!
+    
+    
+ 3. 파일 상단에 front-matter 작성
+    
+    
+
+1
+2
+3
+4
+5
+6
+7
+
+
+---
+title:             # 포스트의 제목을 작성해 주세요
+date:              # 작성 일자 YYYY-MM-DD HH:MM:SS 형태로 작성해 주세요
+author:            # 작성자 이름 혹은 깃허브 아이디
+githublink:        # 작성자 깃허브 프로필 링크 (ex. https://github.com/CameliaOvO)
+tags:              # 태그 목록 [태그1, 태그2, ... ] 가능하다면 영문소문자, 숫자, 하이픈으로만 ..
+---
+
+
+ 1. 작성된 글을 commit 후 PR 날려주
+    
+    </summary>
+    
+    
+      <category term="guide" scheme="http://hyosori.github.io/tags/guide/"/>
+    
+  </entry>
+  
+</feed>
