@@ -118,4 +118,4 @@ via
 
 [Osori FaceCluster - OpenCV_detection](https://github.com/HyOsori/FaceClusterer/blob/master/doomsheart/OpenCV_detection/video_face_recongition.py)
 
-[Algoittm - 얼굴 검출의 맛](https://algoittm.github.io/2018/08/26/2018-08-62-16-15-00-taste-of-face-detection/)
+[Algoittm - 얼굴 검출의 맛](https://algoittm.github.io/2018/08/28/2018-08-62-16-15-00-taste-of-face-detection/)
